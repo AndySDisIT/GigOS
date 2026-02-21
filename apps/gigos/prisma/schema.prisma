@@ -1,0 +1,131 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum DomainType {
+  REMOTE_SURVEYS
+  TESTING_RESEARCH
+  AI_DATA
+  FIELD_LOCAL
+  ADULT_PRIVATE
+}
+
+enum TaskStatus {
+  AVAILABLE
+  CLAIMED
+  IN_PROGRESS
+  SUBMITTED
+  COMPLETED
+  EXPIRED
+  CANCELLED
+}
+
+enum TaskType {
+  SURVEY
+  GAME_TEST
+  AI_TASK
+  MERCH_VISIT
+  AUDIT
+  MYSTERY_SHOP
+  DELIVERY
+  OTHER
+}
+
+model WorkDomain {
+  id        String     @id @default(cuid())
+  type      DomainType @unique
+  name      String
+  icon      String?
+  color     String?
+  createdAt DateTime   @default(now())
+  providers Provider[]
+}
+
+model Provider {
+  id             String     @id @default(cuid())
+  domainId       String
+  domain         WorkDomain @relation(fields: [domainId], references: [id])
+  name           String
+  slug           String     @unique
+  description    String?
+  websiteUrl     String?
+  dashboardUrl   String?
+  payoutInfo     String?
+  typicalPayMin  Float?
+  typicalPayMax  Float?
+  payoutType     String?
+  isPrivate      Boolean    @default(false)
+  createdAt      DateTime   @default(now())
+  tasks          Task[]
+  earnings       Earning[]
+}
+
+model Task {
+  id             String     @id @default(cuid())
+  providerId     String
+  provider       Provider   @relation(fields: [providerId], references: [id])
+  domainType     DomainType
+  taskType       TaskType   @default(OTHER)
+  externalId     String?
+  title          String
+  description    String?
+  payoutAmount   Float?
+  payoutCurrency String?    @default("USD")
+  estMinutes     Int?
+  location       String?
+  latitude       Float?
+  longitude      Float?
+  deadlineAt     DateTime?
+  url            String
+  status         TaskStatus @default(AVAILABLE)
+  claimedAt      DateTime?
+  completedAt    DateTime?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  routeStops     RouteStop[]
+  earnings       Earning[]
+}
+
+model Earning {
+  id          String   @id @default(cuid())
+  providerId  String
+  provider    Provider @relation(fields: [providerId], references: [id])
+  taskId      String?
+  task        Task?    @relation(fields: [taskId], references: [id])
+  amount      Float
+  currency    String   @default("USD")
+  earnedAt    DateTime @default(now())
+  notes       String?
+  createdAt   DateTime @default(now())
+}
+
+model RoutePlan {
+  id          String      @id @default(cuid())
+  name        String?
+  plannedDate DateTime
+  totalMiles  Float?
+  totalMinutes Int?
+  travelMode  String?
+  createdAt   DateTime    @default(now())
+  stops       RouteStop[]
+}
+
+model RouteStop {
+  id          String     @id @default(cuid())
+  routePlanId String
+  routePlan   RoutePlan  @relation(fields: [routePlanId], references: [id])
+  taskId      String?
+  task        Task?      @relation(fields: [taskId], references: [id])
+  stopOrder   Int
+  location    String?
+  latitude    Float?
+  longitude   Float?
+  estArrival  DateTime?
+  completed   Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+}

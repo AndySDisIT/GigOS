@@ -10,6 +10,7 @@
     "db:migrate": "pnpm --filter @gigos/web db:migrate"
   },
   "devDependencies": {
+    "tsx": "^4.21.0",
     "turbo": "^2.1.3"
   }
 }
