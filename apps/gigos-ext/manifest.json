@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "GigOS Survey Sync",
+  "version": "1.0.0",
+  "description": "Sync Survey Merchandiser jobs into GigOS",
+  "permissions": ["activeTab", "storage", "scripting"],
+  "host_permissions": [
+    "https://*.survey.com/*",
+    "http://localhost:3000/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "GigOS Survey Sync"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.survey.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
+}
