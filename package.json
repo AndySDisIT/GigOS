@@ -1,0 +1,15 @@
+{
+  "name": "gigos",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@9.1.1",
+  "scripts": {
+    "dev": "pnpm --filter @gigos/web dev",
+    "build": "turbo run build",
+    "db:generate": "pnpm --filter @gigos/web db:generate",
+    "db:migrate": "pnpm --filter @gigos/web db:migrate"
+  },
+  "devDependencies": {
+    "turbo": "^2.1.3"
+  }
+}
